@@ -4,6 +4,8 @@ from risk_analyzer import fragmentation_score
 from quantum_exposure import check_public_key_exposure
 from migration_estimator import estimate_migration
 from migration_complexity import migration_complexity
+from migration_engine import build_migration_plan
+from pqc_wallet import generate_pqc_keypair, generate_pqc_address
 
 def scan(address):
 
@@ -46,6 +48,24 @@ def scan(address):
     complexity = migration_complexity(summary["count"])
     print("\nMigration Complexity:", complexity)
 
+    plan = build_migration_plan(utxos)
+
+    print("UTXO Count:", plan["utxo_count"])
+    print("Consolidation TX:", plan["consolidation_txs"])
+    print("Total BTC:", plan["total_btc"])
+
+    print("\nSplit Plan:")
+
+    for s in plan["split_plan"]:
+        print("-", format(s, ".8f"), "BTC")
+
+    priv, pub = generate_pqc_keypair()
+    pqc_address = generate_pqc_address(pub)
+
+    print("\nGenerated PQC Wallet")
+
+    print("Public Key:", pub[:30],"...")
+    print("Address:", pqc_address)
 
 if __name__ == "__main__":
 
